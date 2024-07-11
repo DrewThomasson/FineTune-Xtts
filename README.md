@@ -30,3 +30,6 @@ Named  `XTTS_FT.ipynb`
 Make sure each script is executable (`chmod +x`) before running. These scripts are comprehensive and designed to be robust for your setup. Adjust paths and versions as needed based on actual deployment specifics and environment.
 
 python TTS/TTS/demos/xtts_ft_demo/xtts_demo.py --batch_size 2 --num_epochs 6
+
+
+you get the model with `get_model.py`
