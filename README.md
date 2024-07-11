@@ -3,6 +3,8 @@ personal stuff for fine tuning a xtts file
 
 ### I have also included a google colab that works at this moment
 
+Named  `XTTS_FT.ipynb`
+
 ### Usage Instructions:
 1. **Install Script**: Run this first to set up everything. You can do this by saving the script as `install.sh` and then running:
    ```bash
