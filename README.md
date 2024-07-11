@@ -21,5 +21,11 @@ Named  `XTTS_FT.ipynb`
    chmod +x collect.sh
    ./collect.sh
    ```
+4. **Wipe Script**: To wipe all models and training data run:
+   ```bash
+   chmod +x wipe_models_and_data.sh
+   ./wipe_models_and_data.sh
+   ```
 
 Make sure each script is executable (`chmod +x`) before running. These scripts are comprehensive and designed to be robust for your setup. Adjust paths and versions as needed based on actual deployment specifics and environment.
+
