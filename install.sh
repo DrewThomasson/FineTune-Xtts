@@ -10,8 +10,26 @@ sudo apt-get install python3-pip python3-dev -y
 sudo pip3 install virtualenv
 
 # Create a virtual environment
-virtualenv venv
+sudo apt update
+sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+
+curl https://pyenv.run | bash
+
+# Add Pyenv to path by adding the following to your shell configuration file (.bashrc, .zshrc, etc.)
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
+
+# Install Python 3.10.12
+pyenv install 3.10.12
+
+pyenv local 3.10.12
+python -m venv venv
 source venv/bin/activate
+
+
 
 # Install PyTorch and other dependencies
 pip install torch==2.3.0 torchaudio==2.3.0 torchvision==0.17.1 torchtext==0.17.1
