@@ -55,8 +55,43 @@ RUN pip install --upgrade transformers tokenizers==0.19.0
 # Download the Whisper model
 RUN python3 -c "from faster_whisper import WhisperModel; model = WhisperModel('large-v2', device='cpu')"
 
+# Download DVAE and XTTS v2.0 files
+RUN mkdir -p /opt/xtts/XTTS_v2.0_original_model_files \
+    && cd /opt/xtts/XTTS_v2.0_original_model_files \
+    && wget https://coqui.gateway.scarf.sh/hf-coqui/XTTS-v2/main/dvae.pth \
+    && wget https://coqui.gateway.scarf.sh/hf-coqui/XTTS-v2/main/mel_stats.pth \
+    && wget https://coqui.gateway.scarf.sh/hf-coqui/XTTS-v2/main/vocab.json \
+    && wget https://coqui.gateway.scarf.sh/hf-coqui/XTTS-v2/main/model.pth \
+    && wget https://coqui.gateway.scarf.sh/hf-coqui/XTTS-v2/main/config.json
+
 # Create the /tmp/xtts_ft directory
 RUN mkdir -p /tmp/xtts_ft
 
-# Run your Python script
-CMD ["python3", "TTS/demos/xtts_ft_demo/xtts_demo.py", "--batch_size", "2", "--num_epochs", "6"]
+# Create the startup script
+RUN echo '#!/bin/bash\n\
+# Ensure the XTTS model files are in place\n\
+if [ ! -d "/tmp/xtts_ft/run/training/XTTS_v2.0_original_model_files" ]; then\n\
+    mkdir -p /tmp/xtts_ft/run/training\n\
+    cp -r /opt/xtts/XTTS_v2.0_original_model_files /tmp/xtts_ft/run/training/\n\
+fi\n\
+\n\
+# Wait until the training folder is created\n\
+while [ ! -d "/tmp/xtts_ft/run/training" ]; do\n\
+    sleep 1\n\
+done\n\
+\n\
+# Find the dynamically created folder\n\
+DYNAMIC_FOLDER=$(find /tmp/xtts_ft/run/training -maxdepth 1 -type d -name "GPT_XTTS*" | head -n 1)\n\
+\n\
+# Create a symbolic link to the dynamically created folder\n\
+if [ -n "$DYNAMIC_FOLDER" ]; then\n\
+    ln -s "$DYNAMIC_FOLDER" /tmp/xtts_ft/run/training/dynamic\n\
+fi\n\
+\n\
+# Execute the main script\n\
+exec python3 TTS/demos/xtts_ft_demo/xtts_demo.py --batch_size 2 --num_epochs 6\n' > /usr/local/bin/startup.sh
+
+RUN chmod +x /usr/local/bin/startup.sh
+
+# Use the startup script as the entry point
+ENTRYPOINT ["/usr/local/bin/startup.sh"]
